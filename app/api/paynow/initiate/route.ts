@@ -10,6 +10,7 @@ import { prisma }                   from "@/lib/prisma";
 import {
   createPaynowClient,
   buildMerchantRef,
+  getPaynowMerchantAuthEmail,
 }                                   from "@/lib/paynow";
 
 // ── Validation schema ─────────────────────────────────────────────────────────
@@ -83,7 +84,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 5. Create Payment record (PENDING) before calling Paynow
+  // 5. Resolve Paynow's merchant authemail up front so a missing config
+  //    fails fast, before we create a Payment record.
+  let merchantAuthEmail: string;
+  try {
+    merchantAuthEmail = getPaynowMerchantAuthEmail();
+  } catch (err) {
+    console.error("[paynow/initiate] Paynow configuration error:", err);
+    return NextResponse.json(
+      { success: false, error: "Paynow is not configured correctly. Contact the administrator." },
+      { status: 500 }
+    );
+  }
+
+  // 6. Create Payment record (PENDING) before calling Paynow
   const payment = await prisma.payment.create({
     data: {
       requestId,
@@ -96,16 +110,20 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  // 6. Build Paynow payment object
+  // 7. Build Paynow payment object
+  // NOTE: `authemail` here is Paynow's merchant-side contact email
+  // (PAYNOW_MERCHANT_EMAIL) — NOT the customer's email. The customer
+  // (serviceRequest.clientEmail) continues to receive the payment link and
+  // any receipts via Premasse's own email system elsewhere, untouched.
   const paynow     = createPaynowClient(requestId);
   const merchantRef = buildMerchantRef(payment.id);
   const paynowPayment = paynow.createPayment(
     merchantRef,
-    serviceRequest.clientEmail
+    merchantAuthEmail
   );
   paynowPayment.add(serviceRequest.service.name, amount);
 
-  // 7. Send to Paynow
+  // 8. Send to Paynow
   try {
     if (method === "web") {
       // ── Web checkout ──────────────────────────────────────────────────────

@@ -40,6 +40,33 @@ export function createPaynowClient(requestId: string): Paynow {
   return paynow;
 }
 
+// ─── Merchant auth email ─────────────────────────────────────────────────────
+// Paynow's `authemail` field identifies who Paynow itself corresponds with
+// about the transaction on the merchant side. It is NOT the customer's email —
+// the customer's email is used separately for Premasse's own communications
+// (payment link delivery, receipts, etc.) and must never be passed here.
+//
+// While Paynow's integration is in TEST MODE, Paynow requires `authemail` to
+// exactly match the merchant's own registered/login email address, or the
+// transaction is rejected. This is a sandbox-only restriction — it is not a
+// workaround we're relying on. Passing the merchant's registered email as
+// `authemail` is also correct once the integration goes LIVE, so no branching
+// or environment-specific logic is required here.
+
+export function getPaynowMerchantAuthEmail(): string {
+  const merchantEmail = process.env.PAYNOW_MERCHANT_EMAIL;
+
+  if (!merchantEmail || !merchantEmail.trim()) {
+    console.error("[paynow] ❌ Missing PAYNOW_MERCHANT_EMAIL!");
+    throw new Error(
+      "PAYNOW_MERCHANT_EMAIL must be set to the Paynow merchant account's " +
+      "registered/login email address."
+    );
+  }
+
+  return merchantEmail.trim();
+}
+
 // ─── Merchant reference ──────────────────────────────────────────────────────
 // IMPORTANT: Paynow merchant reference cannot contain hyphens or special chars
 // We replace hyphens with underscores to be safe
