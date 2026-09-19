@@ -1,5 +1,11 @@
 // app/api/payments/send-link/route.ts
-// Sends payment link to client via email or WhatsApp
+// Sends payment link to client via email or WhatsApp.
+//
+// SECURITY: amount, recipient email, and the payment link are always read
+// from the authoritative Payment/ServiceRequest records in the database —
+// never trusted from the client request body — so a tampered client request
+// cannot redirect the email, alter the amount shown, or substitute a
+// different payment link.
 
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
@@ -16,30 +22,72 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { to, clientName, amount, paymentLink, requestId, method } = body;
+  const { paymentId, requestId, method } = body;
 
-  if (!to || !paymentLink || !method) {
+  // NOTE: any `to`, `amount`, `paymentLink`, `clientName` fields the client
+  // may still send are intentionally ignored below — they are not
+  // authoritative. See the lookup against `prisma.payment` further down.
+
+  console.info(`[payments/send-link] Request received — method="${method}", paymentId=${paymentId ?? "(none)"}, requestId=${requestId ?? "(none)"}`);
+
+  if (!requestId || !method) {
     return NextResponse.json(
       { success: false, error: "Missing required fields" },
       { status: 400 }
     );
   }
 
-  // Get request details for the email
-  const serviceRequest = await prisma.serviceRequest.findUnique({
-    where: { id: requestId },
-    include: { service: { select: { name: true } } },
-  });
+  // Load the authoritative payment record (and its request/service) —
+  // this is the single source of truth for amount, recipient email, and
+  // the payment link.
+  const payment = paymentId
+    ? await prisma.payment.findFirst({
+        where: { id: paymentId, requestId },
+        include: { request: { include: { service: { select: { name: true } } } } },
+      })
+    : await prisma.payment.findFirst({
+        where: { requestId, status: "AWAITING_PAYMENT" },
+        orderBy: { createdAt: "desc" },
+        include: { request: { include: { service: { select: { name: true } } } } },
+      });
 
-  if (!serviceRequest) {
+  if (!payment) {
     return NextResponse.json(
-      { success: false, error: "Request not found" },
+      { success: false, error: "Payment not found." },
       { status: 404 }
+    );
+  }
+
+  if (payment.status !== "AWAITING_PAYMENT") {
+    return NextResponse.json(
+      { success: false, error: "This payment is not awaiting payment; a link cannot be sent." },
+      { status: 409 }
+    );
+  }
+
+  const serviceRequest = payment.request;
+  const to = serviceRequest.clientEmail;
+  const clientName = serviceRequest.clientName;
+  const amount = payment.amount;
+  const paymentLink = payment.redirectUrl;
+
+  if (!to) {
+    return NextResponse.json(
+      { success: false, error: "This request has no client email on file." },
+      { status: 400 }
+    );
+  }
+
+  if (method === "email" && !paymentLink) {
+    return NextResponse.json(
+      { success: false, error: "This payment has no web payment link to send (mobile payments don't have one)." },
+      { status: 400 }
     );
   }
 
   try {
     if (method === "email") {
+
       // Send via Email
       const { error } = await resend.emails.send({
         from: process.env.EMAIL_FROM ?? "Premasse <onboarding@resend.dev>",

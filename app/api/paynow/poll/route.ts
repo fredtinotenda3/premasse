@@ -81,8 +81,16 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, status: newStatus, changed: false });
-  } catch (err) {
-    console.error("[paynow/poll] Poll failed:", err);
+  } catch (err: any) {
+    // Log as much detail as we safely can (never the integration key) so the
+    // *actual* text Paynow returns is visible in Vercel logs, instead of
+    // just our generic message to the admin UI.
+    console.error("[paynow/poll] Poll failed. pollUrl present:", !!payment.pollUrl);
+    console.error("[paynow/poll] Error message:", err?.message);
+    if (err?.response) {
+      console.error("[paynow/poll] Upstream HTTP status:", err.response.status);
+      console.error("[paynow/poll] Upstream response body:", err.response.data);
+    }
     return NextResponse.json(
       { success: false, error: "Failed to check payment status." },
       { status: 500 }

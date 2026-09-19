@@ -313,6 +313,7 @@ export default function PaymentPanel({
   // Send email
   async function sendEmailLink() {
     if (
+      !payment?.id ||
       !latestPaymentLink ||
       !clientDetails?.email
     ) {
@@ -335,12 +336,7 @@ export default function PaymentPanel({
               "application/json",
           },
           body: JSON.stringify({
-            to: clientDetails.email,
-            clientName:
-              clientDetails.name,
-            amount: latestAmount,
-            paymentLink:
-              latestPaymentLink,
+            paymentId: payment?.id,
             requestId,
             method: "email",
           }),
@@ -371,6 +367,7 @@ export default function PaymentPanel({
   // Send WhatsApp
   async function sendWhatsAppLink() {
     if (
+      !payment?.id ||
       !latestPaymentLink ||
       !clientDetails?.phone
     ) {
@@ -393,12 +390,7 @@ export default function PaymentPanel({
               "application/json",
           },
           body: JSON.stringify({
-            to: clientDetails.phone,
-            clientName:
-              clientDetails.name,
-            amount: latestAmount,
-            paymentLink:
-              latestPaymentLink,
+            paymentId: payment.id,
             requestId,
             method: "whatsapp",
           }),
