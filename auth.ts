@@ -71,30 +71,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { email, password } = parsed.data;
 
-        const user = await prisma.user.findUnique({
-          where: { email },
-          include: {
-            accounts: {
-              where: { provider: "credentials" },
-              select: { access_token: true },
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+              accounts: {
+                where: { provider: "credentials" },
+                select: { access_token: true },
+              },
             },
-          },
-        });
+          });
 
-        if (!user || user.role !== "ADMIN") return null;
+          if (!user || user.role !== "ADMIN") return null;
 
-        const hashedPassword = user.accounts[0]?.access_token;
-        if (!hashedPassword) return null;
+          const hashedPassword = user.accounts[0]?.access_token;
+          if (!hashedPassword) return null;
 
-        const match = await compare(password, hashedPassword);
-        if (!match) return null;
+          const match = await compare(password, hashedPassword);
+          if (!match) return null;
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          };
+        } catch (err) {
+          // A thrown error here (as opposed to returning null) is what
+          // produces NextAuth's generic `error=unknown` page instead of a
+          // normal "invalid credentials" message. Most commonly this is a
+          // database connectivity issue (e.g. Neon's compute endpoint
+          // scaling to zero and taking a few seconds to wake on the first
+          // local request) rather than a wrong password. Logging it here
+          // (safe — no credentials or secrets) makes the real cause visible
+          // in the server console instead of being swallowed into
+          // "unknown".
+          console.error("[auth][authorize] Unexpected error during credential check:", err);
+          return null;
+        }
       },
     }),
 

@@ -281,7 +281,31 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: {
+      // Keep the admin's password in sync with SEED_ADMIN_PASSWORD (or the
+      // default) every time seed runs. Without this, re-running the seed
+      // after the admin already exists silently leaves whatever password
+      // hash was set the first time it was created — so if that first run
+      // used a different value, "the credential in the seed file" quietly
+      // stops matching what's actually in the database.
+      accounts: {
+        upsert: {
+          where: {
+            provider_providerAccountId: {
+              provider: "credentials",
+              providerAccountId: adminEmail,
+            },
+          },
+          update: { access_token: hashedPassword },
+          create: {
+            type: "credentials",
+            provider: "credentials",
+            providerAccountId: adminEmail,
+            access_token: hashedPassword,
+          },
+        },
+      },
+    },
     create: {
       name:  "Premasse Admin",
       email: adminEmail,
