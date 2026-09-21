@@ -84,17 +84,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 5. Resolve Paynow's merchant authemail up front so a missing config
-  //    fails fast, before we create a Payment record.
-  let merchantAuthEmail: string;
-  try {
-    merchantAuthEmail = getPaynowMerchantAuthEmail();
-  } catch (err) {
-    console.error("[paynow/initiate] Paynow configuration error:", err);
-    return NextResponse.json(
-      { success: false, error: "Paynow is not configured correctly. Contact the administrator." },
-      { status: 500 }
-    );
+  // 5. Resolve Paynow's authemail. This must be the CUSTOMER's email, per
+  //    Paynow's own SDK semantics — Paynow uses it to check whether the
+  //    payer has a registered Paynow account (prompting a normal login for
+  //    THEIR OWN account) or lets them pay as a guest. Passing the
+  //    merchant's own email here was tried and is wrong: it makes Paynow's
+  //    checkout page think the *merchant* is paying, and prompts the
+  //    customer to log into the merchant's Paynow account — which they
+  //    obviously can't and shouldn't do. `clientEmail` is a required field
+  //    on ServiceRequest, so this will always be present; the merchant
+  //    email is kept only as a last-resort fallback for defense in depth.
+  let authEmail = serviceRequest.clientEmail;
+  if (!authEmail) {
+    try {
+      authEmail = getPaynowMerchantAuthEmail();
+    } catch (err) {
+      console.error("[paynow/initiate] Paynow configuration error:", err);
+      return NextResponse.json(
+        { success: false, error: "Paynow is not configured correctly. Contact the administrator." },
+        { status: 500 }
+      );
+    }
   }
 
   // 6. Create Payment record (PENDING) before calling Paynow
@@ -110,16 +120,15 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
-  // 7. Build Paynow payment object
-  // NOTE: `authemail` here is Paynow's merchant-side contact email
-  // (PAYNOW_MERCHANT_EMAIL) — NOT the customer's email. The customer
-  // (serviceRequest.clientEmail) continues to receive the payment link and
-  // any receipts via Premasse's own email system elsewhere, untouched.
+  // 7. Build Paynow payment object.
+  // authemail = the CUSTOMER's email (see note above) — this is what lets
+  // real customers actually complete payment instead of being redirected
+  // to log into the merchant's own Paynow account.
   const paynow     = createPaynowClient(requestId);
   const merchantRef = buildMerchantRef(payment.id);
   const paynowPayment = paynow.createPayment(
     merchantRef,
-    merchantAuthEmail
+    authEmail
   );
   paynowPayment.add(serviceRequest.service.name, amount);
 

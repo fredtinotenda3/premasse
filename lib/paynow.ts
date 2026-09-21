@@ -40,18 +40,20 @@ export function createPaynowClient(requestId: string): Paynow {
   return paynow;
 }
 
-// ─── Merchant auth email ─────────────────────────────────────────────────────
-// Paynow's `authemail` field identifies who Paynow itself corresponds with
-// about the transaction on the merchant side. It is NOT the customer's email —
-// the customer's email is used separately for Premasse's own communications
-// (payment link delivery, receipts, etc.) and must never be passed here.
-//
-// While Paynow's integration is in TEST MODE, Paynow requires `authemail` to
-// exactly match the merchant's own registered/login email address, or the
-// transaction is rejected. This is a sandbox-only restriction — it is not a
-// workaround we're relying on. Passing the merchant's registered email as
-// `authemail` is also correct once the integration goes LIVE, so no branching
-// or environment-specific logic is required here.
+// ─── Merchant auth email (fallback only — do NOT use as primary authemail) ──
+// IMPORTANT CORRECTION: an earlier version of this integration used this as
+// the primary Paynow `authemail` for every transaction. That was wrong and
+// has been reverted. Paynow's `authemail` should be the CUSTOMER's email —
+// Paynow uses it to check whether the payer has a registered Paynow account
+// (prompting a normal login to THEIR account) or lets them check out as a
+// guest. Passing the merchant's own registered email here makes Paynow think
+// the *merchant* is the one paying, and redirects the customer to log into
+// the merchant's own Paynow account — which breaks checkout for real
+// customers entirely. See app/api/paynow/initiate/route.ts, where
+// `serviceRequest.clientEmail` is now used as the authemail, with this
+// function kept only as a defensive fallback for the (practically
+// unreachable, since clientEmail is a required field) case where no
+// customer email is available at all.
 
 export function getPaynowMerchantAuthEmail(): string {
   const merchantEmail = process.env.PAYNOW_MERCHANT_EMAIL;
