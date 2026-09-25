@@ -2,8 +2,5 @@
   "buildCommand": "prisma generate && next build",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "NEXT_PUBLIC_SITE_URL": "https://your-domain.vercel.app"
-  }
+  "outputDirectory": ".next"
 }
