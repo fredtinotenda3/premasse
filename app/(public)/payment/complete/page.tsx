@@ -6,8 +6,6 @@ import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
 
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 import {
   ArrowRight,
@@ -190,7 +188,6 @@ export default async function PaymentCompletePage({
 
   return (
     <>
-      <Navbar />
 
       <main className="relative min-h-screen overflow-hidden bg-[#041f19] pt-20">
 
@@ -400,8 +397,6 @@ export default async function PaymentCompletePage({
           </div>
         </section>
       </main>
-
-      <Footer />
     </>
   );
 }

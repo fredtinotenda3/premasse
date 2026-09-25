@@ -405,7 +405,7 @@ export default async function RequestPage({
                     </p>
 
                     <a
-                      href="mailto:info@premasse.co.zw"
+                      href="mailto:premasse@outlook.com"
                       className="
                         inline-flex
                         items-center
@@ -418,7 +418,7 @@ export default async function RequestPage({
                         font-medium
                       "
                     >
-                      info@premasse.co.zw
+                      premasse@outlook.com
                     </a>
                   </div>
                 </div>
