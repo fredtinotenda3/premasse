@@ -9,6 +9,7 @@ import {
   parseWebhookBody,
   mapPaynowStatus,
   extractPaymentIdFromMerchantRef,
+  shouldApplyWebhookStatusTransition,
 } from "@/lib/paynow";
 
 export async function POST(req: NextRequest) {
@@ -79,9 +80,13 @@ export async function POST(req: NextRequest) {
   // 7. Map Paynow status to our PaymentStatus
   const newStatus = mapPaynowStatus(paynowStatus);
 
-  // Skip if status hasn't changed
-  if (payment.status === newStatus) {
-    console.info(`[paynow/webhook] Status unchanged (${newStatus}) — skipping`);
+  // Skip no-op updates (duplicate/replayed callbacks) and never let a
+  // confirmed PAID payment regress to a stale Cancelled/Failed status.
+  if (!shouldApplyWebhookStatusTransition(payment.status, newStatus)) {
+    console.info(
+      `[paynow/webhook] Ignoring transition ${payment.status} → ${newStatus} ` +
+      `(no-op or would regress a confirmed payment) — skipping`
+    );
     return new NextResponse("OK", { status: 200 });
   }
 

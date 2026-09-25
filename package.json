@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx prisma db seed"
+    "seed": "npx prisma db seed",
+    "test": "tsx --test tests/**/*.test.ts"
   },
   "overrides": {
     "@auth/core": "0.41.0"

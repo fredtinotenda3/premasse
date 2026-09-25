@@ -10,7 +10,7 @@ import { prisma }                   from "@/lib/prisma";
 import {
   createPaynowClient,
   buildMerchantRef,
-  getPaynowMerchantAuthEmail,
+  resolvePaynowAuthEmail,
 }                                   from "@/lib/paynow";
 
 // ── Validation schema ─────────────────────────────────────────────────────────
@@ -84,27 +84,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 5. Resolve Paynow's authemail. This must be the CUSTOMER's email, per
-  //    Paynow's own SDK semantics — Paynow uses it to check whether the
-  //    payer has a registered Paynow account (prompting a normal login for
-  //    THEIR OWN account) or lets them pay as a guest. Passing the
-  //    merchant's own email here was tried and is wrong: it makes Paynow's
-  //    checkout page think the *merchant* is paying, and prompts the
-  //    customer to log into the merchant's Paynow account — which they
-  //    obviously can't and shouldn't do. `clientEmail` is a required field
-  //    on ServiceRequest, so this will always be present; the merchant
-  //    email is kept only as a last-resort fallback for defense in depth.
-  let authEmail = serviceRequest.clientEmail;
-  if (!authEmail) {
-    try {
-      authEmail = getPaynowMerchantAuthEmail();
-    } catch (err) {
-      console.error("[paynow/initiate] Paynow configuration error:", err);
-      return NextResponse.json(
-        { success: false, error: "Paynow is not configured correctly. Contact the administrator." },
-        { status: 500 }
-      );
-    }
+  // 5. Resolve Paynow's authemail. This is genuinely different between
+  //    Paynow test mode (must be the merchant's own registered/login
+  //    email — anything else is rejected) and live mode (must be the
+  //    CUSTOMER's email, so Paynow doesn't try to log the customer into the
+  //    merchant's own Paynow account). See resolvePaynowAuthEmail() /
+  //    PAYNOW_TEST_MODE in lib/paynow.ts for the full explanation.
+  let authEmail: string;
+  try {
+    authEmail = resolvePaynowAuthEmail(serviceRequest.clientEmail);
+  } catch (err) {
+    console.error("[paynow/initiate] Paynow configuration error:", err);
+    return NextResponse.json(
+      { success: false, error: "Paynow is not configured correctly. Contact the administrator." },
+      { status: 500 }
+    );
   }
 
   // 6. Create Payment record (PENDING) before calling Paynow
