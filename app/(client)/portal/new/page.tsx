@@ -305,7 +305,7 @@ export default async function NewRequestPage({
               </p>
 
               <a
-                href="mailto:premasse@outlook.com"
+                href="mailto:info@premasse.co.zw"
                 className="
                   text-[#041f19]
                   bg-[#C9A84C]

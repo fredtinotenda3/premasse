@@ -109,8 +109,8 @@ export default function ClientConfirmation({
             <Text style={body}>
               If you have any questions in the meantime, reply to this email or
               contact us at{" "}
-              <Link href="mailto:premasse@outlook.com" style={link}>
-                premasse@outlook.com
+              <Link href="mailto:info@premasse.co.zw" style={link}>
+                info@premasse.co.zw
               </Link>
               .
             </Text>
@@ -127,8 +127,8 @@ export default function ClientConfirmation({
                 premasse.co.zw
               </Link>
               {" · "}
-              <Link href="mailto:premasse@outlook.com" style={footerLink}>
-                premasse@outlook.com
+              <Link href="mailto:info@premasse.co.zw" style={footerLink}>
+                info@premasse.co.zw
               </Link>
             </Text>
             <Text style={footerDisclaimer}>

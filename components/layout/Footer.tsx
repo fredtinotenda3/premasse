@@ -215,10 +215,10 @@ export default function Footer() {
                     </p>
 
                     <a
-                      href="mailto:premasse@outlook.com"
+                      href="mailto:info@premasse.co.zw"
                       className="text-white/55 hover:text-white transition-colors duration-300 text-sm break-all"
                     >
-                      premasse@outlook.com
+                      info@premasse.co.zw
                     </a>
                   </div>
                 </div>
