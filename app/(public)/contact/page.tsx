@@ -43,8 +43,8 @@ type ContactFields = z.infer<typeof contactSchema>;
 const CONTACT_ITEMS = [
   {
     label: "Email",
-    value: "premasse@outlook.com",
-    href: "mailto:premasse@outlook.com",
+    value: "info@premasse.co.zw",
+    href: "mailto:info@premasse.co.zw",
     icon: Mail,
   },
   {
@@ -638,10 +638,10 @@ export default function ContactPage() {
                   We respond to all enquiries within one business day. For
                   urgent matters, email us directly at{" "}
                   <a
-                    href="mailto:premasse@outlook.com"
+                    href="mailto:info@premasse.co.zw"
                     className="text-white hover:text-[#C9A84C] transition-colors"
                   >
-                    premasse@outlook.com
+                    info@premasse.co.zw
                   </a>
                   .
                 </p>

@@ -102,7 +102,7 @@ export default function OGImage() {
             gap:            "32px",
           }}
         >
-          {["ZIMRA Registered", "Harare, Zimbabwe", "premasse@outlook.com"].map((item) => (
+          {["ZIMRA Registered", "Harare, Zimbabwe", "info@premasse.co.zw"].map((item) => (
             <div
               key={item}
               style={{

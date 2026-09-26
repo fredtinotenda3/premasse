@@ -349,7 +349,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
           React.createElement(Text, { style: styles.logoText }, "Premasse"),
           React.createElement(Text, { style: styles.logoSub }, "Business Services"),
           React.createElement(Text, { style: { fontSize: 9, color: SLATE, marginTop: 6 } }, "Harare, Zimbabwe"),
-          React.createElement(Text, { style: { fontSize: 9, color: SLATE } }, "premasse@outlook.com"),
+          React.createElement(Text, { style: { fontSize: 9, color: SLATE } }, "info@premasse.co.zw"),
         ),
         React.createElement(
           View,
@@ -409,7 +409,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
           React.createElement(Text, { style: styles.partyName }, "Premasse Business Services"),
           React.createElement(Text, { style: styles.partyDetail }, "Registered Tax Practitioners"),
           React.createElement(Text, { style: styles.partyDetail }, "PAAB Registered · Zimbabwe"),
-          React.createElement(Text, { style: styles.partyDetail }, "premasse@outlook.com"),
+          React.createElement(Text, { style: styles.partyDetail }, "info@premasse.co.zw"),
           React.createElement(Text, { style: styles.partyDetail }, "Harare, Zimbabwe"),
         ),
         React.createElement(
@@ -484,7 +484,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
           { style: styles.paymentText },
           data.status === "PAID"
             ? `Payment received${data.paidAt ? ` on ${data.paidAt}` : ""} via ${data.paymentMethod ?? "Paynow"}.`
-            : `Payment accepted via EcoCash, OneMoney, or Paynow. Contact premasse@outlook.com for bank transfer details.`
+            : `Payment accepted via EcoCash, OneMoney, or Paynow. Contact info@premasse.co.zw for bank transfer details.`
         ),
       ),
 
@@ -500,7 +500,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
       React.createElement(
         View,
         { style: styles.footer, fixed: true },
-        React.createElement(Text, { style: styles.footerText }, "Premasse Business Services · Harare, Zimbabwe · premasse@outlook.com"),
+        React.createElement(Text, { style: styles.footerText }, "Premasse Business Services · Harare, Zimbabwe · info@premasse.co.zw"),
         React.createElement(
           Text,
           { style: styles.footerText, render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) => `Page ${pageNumber} of ${totalPages}` },

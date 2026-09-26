@@ -100,7 +100,7 @@ export default function Navbar() {
               "
             >
               <Image
-                src="/images/logos/pre-logo.svg"
+                src="/images/logos/logo-mark.svg"
                 alt="Premasse Business Services"
                 width={210}
                 height={58}

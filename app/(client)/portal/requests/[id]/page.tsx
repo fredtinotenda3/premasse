@@ -837,10 +837,10 @@ export default async function PortalRequestDetailPage({
                   </p>
 
                   <a
-                    href="mailto:premasse@outlook.com"
+                    href="mailto:info@premasse.co.zw"
                     className="text-[#C9A84C] text-sm hover:text-white transition-colors duration-300"
                   >
-                    premasse@outlook.com
+                    info@premasse.co.zw
                   </a>
                 </div>
               </div>
