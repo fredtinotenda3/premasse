@@ -108,7 +108,7 @@ const structuredData = {
   description:
     "ZIMRA-registered tax accountants and business services specialists in Zimbabwe. Company registration, NSSA, PRAZ, ZIMDEF compliance, accounting, bookkeeping, and business growth advisory.",
   telephone:    "",
-  email:        "info@premasse.co.zw",
+  email:        "premasse@outlook.com",
   priceRange:   "$$",
   currenciesAccepted: "USD, ZWL",
   paymentAccepted:    "Cash, EcoCash, OneMoney, Bank Transfer",
