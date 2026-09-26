@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect } from "react";
+import Logo from "@/components/layout/Logo";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,44 +77,7 @@ export default function Navbar() {
       <nav className="relative mx-auto max-w-7xl px-6 lg:px-12 h-24 flex items-center justify-between">
         
         {/* Logo */}
-        <Link
-          href="/"
-          className="relative z-50 flex items-center group"
-        >
-          <div className="relative transition-all duration-300 group-hover:scale-[1.02]">
-            
-            <div
-              className="
-                rounded-2xl
-                bg-white/5
-                backdrop-blur-md
-                border
-                border-white/10
-                px-3
-                py-2
-                shadow-[0_8px_30px_rgba(0,0,0,0.18)]
-                transition-all
-                duration-300
-                group-hover:bg-white/10
-                group-hover:border-gold/20
-              "
-            >
-              <Image
-                src="/images/logos/logo-mark.svg"
-                alt="Premasse Business Services"
-                width={210}
-                height={58}
-                priority
-                className="
-                  h-auto
-                  w-auto
-                  max-h-[58px]
-                  object-contain
-                "
-              />
-            </div>
-          </div>
-        </Link>
+        <Logo />
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-10">

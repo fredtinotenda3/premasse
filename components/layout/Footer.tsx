@@ -1,11 +1,11 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   ArrowUpRight,
   MapPin,
   Mail,
   ShieldCheck,
 } from "lucide-react";
+import Logo from "@/components/layout/Logo";
 
 const services = [
   "Tax Accountant Consultation",
@@ -54,34 +54,7 @@ export default function Footer() {
           <div>
             
             {/* Logo */}
-            <Link
-              href="/"
-              className="inline-flex items-center group mb-8"
-            >
-              <div
-                className="
-                  rounded-2xl
-                  bg-white/[0.04]
-                  backdrop-blur-md
-                  border
-                  border-white/10
-                  px-4
-                  py-3
-                  transition-all
-                  duration-300
-                  group-hover:bg-white/[0.06]
-                  group-hover:border-[#C9A84C]/20
-                "
-              >
-                <Image
-                  src="/images/logos/logo-mark.svg"
-                  alt="Premasse Business Services"
-                  width={140}
-                  height={40}
-                  className="object-contain"
-                />
-              </div>
-            </Link>
+            <Logo className="mb-8" />
 
             {/* Description */}
             <p className="font-body text-white/60 text-base leading-relaxed max-w-md mb-8">

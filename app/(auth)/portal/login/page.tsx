@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import Logo from "@/components/layout/Logo";
 
 export const metadata: Metadata = {
   title: "Sign in — Premasse Portal",
@@ -173,13 +174,7 @@ export default async function PortalLoginPage({
               </div>
             </div>
 
-            <h1 className="font-display text-white text-5xl leading-none mb-3">
-              Premasse
-            </h1>
-
-            <p className="text-white/45 text-xs tracking-[0.22em] uppercase">
-              Secure business access
-            </p>
+            <Logo size="lg" subtitle="Secure business access" className="mx-auto" />
           </div>
 
           {/* Card */}

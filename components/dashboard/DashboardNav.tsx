@@ -8,6 +8,7 @@ import {
   useState,
   useEffect,
 } from "react";
+import Logo from "@/components/layout/Logo";
 
 import { signOut } from "next-auth/react";
 
@@ -208,33 +209,11 @@ export default function DashboardNav({
 
           {/* Logo */}
           <div className="px-6 py-8 border-b border-white/10">
-
-            <Link
+            <Logo
               href="/dashboard"
-              className="flex items-center gap-4"
-              onClick={() =>
-                setIsMobileMenuOpen(
-                  false
-                )
-              }
-            >
-
-              <div className="w-12 h-12 rounded-2xl border border-[#C9A84C]/20 bg-[#C9A84C]/10 flex items-center justify-center">
-
-                <Sparkles className="w-5 h-5 text-[#C9A84C]" />
-              </div>
-
-              <div>
-
-                <span className="font-display text-white text-xl font-bold block">
-                  Premasse
-                </span>
-
-                <span className="text-[#C9A84C] text-[10px] tracking-[0.22em] uppercase font-semibold">
-                  Admin dashboard
-                </span>
-              </div>
-            </Link>
+              subtitle="Admin dashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
           </div>
 
           {/* Nav */}
@@ -373,28 +352,7 @@ export default function DashboardNav({
 
           {/* Logo */}
           <div className="px-7 py-8 border-b border-white/10">
-
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-4"
-            >
-
-              <div className="w-12 h-12 rounded-2xl border border-[#C9A84C]/20 bg-[#C9A84C]/10 flex items-center justify-center shadow-[0_10px_30px_rgba(201,168,76,0.12)]">
-
-                <Sparkles className="w-5 h-5 text-[#C9A84C]" />
-              </div>
-
-              <div>
-
-                <span className="font-display text-white text-xl font-bold block">
-                  Premasse
-                </span>
-
-                <span className="text-[#C9A84C] text-[10px] tracking-[0.22em] uppercase font-semibold">
-                  Admin dashboard
-                </span>
-              </div>
-            </Link>
+            <Logo href="/dashboard" subtitle="Admin dashboard" />
           </div>
 
           {/* Nav */}
